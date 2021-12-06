@@ -5,6 +5,24 @@ const Main = ({ activeNote, onUpdateNotes }) => {
     onUpdateNotes({ ...activeNote, [key]: value, lastModified: Date.now() });
   };
 
+  function onTabKeyDown(e){
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      let start = e.target.selectionStart;
+      let end = e.target.selectionEnd;
+
+      console.log({start, end});
+      console.log(e.target.value);
+  
+      // set textarea value to: text before caret + tab + text after caret
+      e.target.value = e.target.value.substring(0, start) +
+        "\t" + e.target.value.substring(end);
+      onEditField("body", e.target.value);
+      // put caret at right position again
+      e.target.selectionStart = e.target.selectionEnd = start + 1;
+    }
+  }
+
   if (!activeNote)
     return <div className="no-active-note">No Note Selected</div>;
 
@@ -25,6 +43,7 @@ const Main = ({ activeNote, onUpdateNotes }) => {
             name="body"
             value={activeNote.body}
             onChange={(e) => onEditField(e.target.name, e.target.value)}
+            onKeyDown={onTabKeyDown}
           ></textarea>
         </div>
       </div>
